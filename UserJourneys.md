@@ -33,9 +33,7 @@ Given this information (already entered into the TF-Coder Colab by default), the
 TF-Coder tool will find the appropriate TensorFlow code automatically in a
 fraction of a second:
 
-<pre><b>
-tf.add(cols, tf.expand_dims(rows, 1))
-</b></pre>
+<pre><b>tf.add(cols, tf.expand_dims(rows, 1))</b></pre>
 
 The above problem was pretty simple just to illustrate the idea of programming
 by example. TF-Coder can be useful for harder problems as well, as we'll see
@@ -89,9 +87,7 @@ output = [1, 0, 2, 2, 3, 4]
 
 Within seconds, TF-Coder outputs the following solution:
 
-<pre><b>
-tf.searchsorted(boundaries, prices, side='right')
-</b></pre>
+<pre><b>tf.searchsorted(boundaries, prices, side='right')</b></pre>
 
 This gives us a useful hint, and the documentation for
 [`tf.searchsorted`](https://www.tensorflow.org/api_docs/python/tf/searchsorted)
@@ -150,9 +146,7 @@ TF-Coder uses a combination of
 [`tf.argmax`](https://www.tensorflow.org/api_docs/python/tf/math/argmax) in a
 short solution to this problem:
 
-<pre><b>
-tf.cast(tf.one_hot(tf.argmax(scores, axis=1), 3), tf.int32)
-</b></pre>
+<pre><b>tf.cast(tf.one_hot(tf.argmax(scores, axis=1), 3), tf.int32)</b></pre>
 
 Through a detailed search over combinations of TensorFlow operations, TF-Coder
 often finds elegant solutions like this, which may simplify and speed up your
@@ -187,18 +181,13 @@ normalized = tf.divide(counts, tf.reduce_sum(counts, axis=1))
 Is this right? There are many potential pitfalls to think about:
 
 * Is the summation axis correct, or should it be `axis=0`?
-
 * Are the shapes of `counts` and `tf.reduce_sum(counts, axis=1)` compatible for
   division, or do you need to reshape or transpose either of these?
-
 * `counts` and `tf.reduce_sum(counts, axis=1)` are both `tf.int32` tensors. Can
   `tf.int32` tensors be divided, or do you need to cast them to a float DType
   first?
-
 * Are the two arguments in the correct order, or should they be swapped?
-
 * Does the output have type `tf.int32`, `tf.float32`, or something else?
-
 * Is there a simpler or better way that was not considered?
 
 You can give this task to TF-Coder with the following input-output example:
@@ -217,10 +206,7 @@ output = [[0.0, 1.0, 0.0, 0.0],
 
 TF-Coder's solution is:
 
-<pre><b>
-tf.cast(tf.divide(counts, tf.expand_dims(tf.reduce_sum(counts, axis=1),
-axis=1)), tf.float32)
-</b></pre>
+<pre><b>tf.cast(tf.divide(counts, tf.expand_dims(tf.reduce_sum(counts, axis=1), axis=1)), tf.float32)</b></pre>
 
 By using TF-Coder to solve this problem, the mental burden of the exercise is
 reduced. When TF-Coder produces the solution above, it is guaranteed that the

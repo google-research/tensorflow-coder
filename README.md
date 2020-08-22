@@ -18,7 +18,6 @@ For more information about TF-Coder, see the following documents:
 * [**TF-Coder Tutorial**](Tutorial.md): walks you through using TF-Coder to
   solve tensor manipulation tasks, and provides tips on getting the most out of
   TF-Coder.
-
 * [**User Journeys**](UserJourneys.md): illustrates several realistic scenarios
   where TF-Coder can help accelerate your TensorFlow development in different
   ways.
@@ -84,11 +83,9 @@ For more information about TF-Coder, see the following documents:
 * [**TF-Coder Tutorial**](Tutorial.md): walks you through using TF-Coder to
   solve tensor manipulation tasks, and provides tips on getting the most out of
   TF-Coder.
-
 * [**User Journeys**](UserJourneys.md): illustrates several realistic scenarios
   where TF-Coder can help accelerate your TensorFlow development in different
   ways.
-
 * [**Our research paper**](https://arxiv.org/abs/2003.09040): describes the
   technology behind TF-Coder.
 

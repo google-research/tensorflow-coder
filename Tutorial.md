@@ -10,18 +10,13 @@ If you have used Colab before, feel free to skip this section.
 
 * Colab is an interactive Python notebook environment, similar to Jupyter
   notebooks. A Colab notebook consists of code cells and text cells.
-
 * After typing code into a code cell, press Shift-Enter, or click the play
   button in the top left corner of the cell, to execute the code.
-
 * While a cell is running, the play button turns into a stop button. You can use
   this to interrupt execution of the code.
-
 * Variables persist between cell executions.
-
 * You can create new code cells by hovering between existing cells and clicking
   "+ Code".
-
 * When you open the TF-Coder Colab, it will be in _playground mode_, which means
   any edits you make are only visible to you.(TODO: check this)
 
@@ -30,15 +25,12 @@ If you have used Colab before, feel free to skip this section.
 This only needs to be done once per session of using TF-Coder.
 
 1. Open the [TF-Coder Colab](https://colab.research.google.com/github/google-research/tensorflow-coder/blob/master/TF-Coder_Colab.ipynb).
-
 2. (TODO: connect to a runtime)
-
 3. Read the text in Step 0 of the Colab notebook. As explained in the cell, we
    would like to record the problems given to TF-Coder, as well as TF-Coder's
    solutions, in order to improve the tool and accelerate further research in
    program synthesis. This data collection is completely optional. Check or
    uncheck the boxes as desired, and then run the cell.
-
 4. Run the cell in Step 1 of the Colab notebook. (TODO: say how long this takes)
 
 ## Using TF-Coder
@@ -119,9 +111,7 @@ are found.
 Finally, it is important to verify that TF-Coder's solution actually implements
 the desired transformation. In this case, TF-Coder produces a correct solution:
 
-<pre><b>
-tf.add(cols, tf.expand_dims(rows, 1))
-</b></pre>
+<pre><b>tf.add(cols, tf.expand_dims(rows, 1))</b></pre>
 
 However, sometimes TF-Coder produces a solution that works for the given input-
 output example, but does not generalize fully. These solutions are called _false
@@ -178,9 +168,7 @@ description = 'extract values greater than 5'
 TF-Coder's old solution is no longer valid for the updated input-output example,
 and TF-Coder produces a correct solution instead:
 
-<pre><b>
-tf.boolean_mask(data, tf.greater(data, tf.constant(5)))
-</b></pre>
+<pre><b>tf.boolean_mask(data, tf.greater(data, tf.constant(5)))</b></pre>
 
 In general, we find that including more numbers in the input and output tensors
 is an effective way to avoid false positive solutions. We discuss other ways of
@@ -205,7 +193,6 @@ avoiding false positives in the section below.
 
 * If you want to play with TensorFlow in Colab (e.g., to understand how a
   TF-Coder solution works or to test your own solution):
-
   * The TF-Coder Colab already imports TensorFlow 2 and Numpy, for your
     convenience.
   * Use `tf.constant` to create a tensor from the list format:
@@ -281,46 +268,37 @@ unambiguously identify the intended transformation.
 * TF-Coder will print out the list of constants that it is using, including
   constants chosen through heuristics. This list is ordered with highest-
   priority constants at the beginning.
-
 * If the intended solution requires a constant that is not in TF-Coder's printed
   list of constants, then TF-Coder will be _unable_ to find the intended
   solution. So, it is important to provide any necessary constants.
-
 * If you explicitly provide constants, they will be used with the highest
   priority. Thus, even if TF-Coder's heuristics choose your desired constant, it
   may be better to provide the constant explicitly so that TF-Coder is more
   confident about using your constant.
-
 * Providing extraneous constants will slow down the tool.
 
 ### Description
 
 * The description is optional. If provided, it is used to prioritize TensorFlow
   operations that fit with the description.
-
 * If you know of a TensorFlow operation (e.g., `tf.reduce_max`) that is
   relevant, include its name (e.g., "tf.reduce_max") anywhere in the
   description. This will lead TF-Coder to prioritize that operation.
-
 * If possible, try to describe how the output should be computed, rather than
   what the output conceptually represents.
-
 * A good description is less important than a good input-output example.
 
 ### Other Details and Advanced Options
 
 * When running TF-Coder, you can set the time limit, the number of solutions to
   find, and whether solutions are required to use inputs.
-
   * Time limit: This is the maximum amount of time, in seconds, that TF-Coder
     will spend on the problem before giving up. Note that you can stop the tool
     at any time by pressing the cell's stop button.
-
   * Number of solutions: TF-Coder can continue searching for more solutions
     after the first solution is found. This can help you examine different ways
     of solving the problem. However, enabling multiple solutions will cause the
     entire search to slow down, even for the first solution.
-
   * Solution requirement: By default, solutions are required to use every input
     tensor at least once. This constraint can be relaxed to allow solutions that
     use only one input (if there are multiple inputs), or even solutions that
@@ -329,7 +307,6 @@ unambiguously identify the intended transformation.
 * By default, integer tensors have a DType of `tf.int32`, and float tensors have
   a DType of `tf.float32`. To specify a different DType, provide a `tf.Tensor`
   object instead of a list. For example:
-
   * If an input is given as `[3, 1, 7, 4]`, then it will have a DType of
     `tf.int32`.
   * If an input is given as `tf.constant([3, 1, 7, 4], dtype=tf.int64)`, then it
@@ -337,7 +314,6 @@ unambiguously identify the intended transformation.
 
 * A primitive scalar input can be specified with a Python float or int, and a
   scalar tensor can be specified with a `tf.Tensor`:
-
   * If an input is given as `[123]`, then it will be a 1-dimensional tensor with
     shape `(1,)`, equivalent to `tf.constant([123])`.
   * If an input is given as `123`, then it will remain a Python primitive int,

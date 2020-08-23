@@ -107,16 +107,17 @@ maximum element of each row of the input tensor.
 ```
 # Input tensor
 scores = [[0.7, 0.2, 0.1],
-          [0.4, 0.1, 0.5],
+          [0.4, 0.5, 0.1],
           [0.4, 0.4, 0.2],
-          [0.0, 1.0, 0.0]]
-
+          [0.3, 0.4, 0.3],
+          [0.0, 0.0, 1.0]]
 
 # Output tensor
 top_scores = [[1, 0, 0],
-              [0, 0, 1],
+              [0, 1, 0],
               [1, 0, 0],
-              [0, 1, 0]]
+              [0, 1, 0],
+              [0, 0, 1]]
 ```
 
 Note that if the same largest element appears multiple times within a row, such
@@ -126,9 +127,9 @@ be marked, so that every row of `top_scores` has exactly one entry of `1`.
 Unlike in the last problem, there is no single TensorFlow function that performs
 this computation. If you search the documentation for "max", you may find that
 `tf.reduce_max`, `tf.argmax`, and `tf.maximum` are relevant, but which one
-should you use? `tf.reduce_max` produces `[0.7, 0.5, 0.4, 1.0]`, `tf.argmax`
-produces `[0, 2, 1, 2]`, and `tf.maximum` isn't right because it takes two
-arguments. None of these look close to our desired output.
+should you use? `tf.reduce_max` produces `[0.7, 0.5, 0.4, 0.4, 1.0]`,
+`tf.argmax` produces `[0, 1, 0, 1, 2]`, and `tf.maximum` isn't right because it
+takes two arguments. None of these look close to our desired output.
 
 TF-Coder can help solve tricky problems like this. You can write the problem in
 the form of an input-output example:
@@ -137,14 +138,16 @@ the form of an input-output example:
 # Input-output example
 inputs = {
     'scores': [[0.7, 0.2, 0.1],
-               [0.4, 0.1, 0.5],
+               [0.4, 0.5, 0.1],
                [0.4, 0.4, 0.2],
-               [0.0, 1.0, 0.0]],
+               [0.3, 0.4, 0.3],
+               [0.0, 0.0, 1.0]],
 }
 output = [[1, 0, 0],
-          [0, 0, 1],
+          [0, 1, 0],
           [1, 0, 0],
-          [0, 1, 0]]
+          [0, 1, 0],
+          [0, 0, 1]]
 ```
 
 TF-Coder uses a combination of

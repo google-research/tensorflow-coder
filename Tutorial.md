@@ -18,7 +18,8 @@ If you have used Colab before, feel free to skip this section.
 * You can create new code cells by hovering between existing cells and clicking
   "+ Code".
 * When you open the TF-Coder Colab, it will be in _playground mode_, which means
-  any edits you make are only visible to you.(TODO: check this)
+  any edits you make are only visible to you, and will be lost when you reload
+  the page.
 
 ## Setting up TF-Coder
 
@@ -32,7 +33,8 @@ This only needs to be done once per session of using TF-Coder.
    solutions, in order to improve the tool and accelerate further research in
    program synthesis. This data collection is completely optional. Check or
    uncheck the boxes as desired, and then run the cell.
-4. Run the cell in Step 1 of the Colab notebook. (TODO: say how long this takes)
+4. Run the cell in Step 1 of the Colab notebook to finish setup. This will take
+   about 10 seconds to complete.
 
 ## Using TF-Coder
 

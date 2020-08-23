@@ -486,22 +486,22 @@ def stackoverflow_20():
   examples = [
       benchmark.Example(
           inputs=[
-              [[0.6, 0.1, 0.3],
-               [0.1, 0.2, 0.7],
-               [0.5, 0.4, 0.1],
+              [[0.7, 0.2, 0.1],
+               [0.4, 0.5, 0.1],
+               [0.4, 0.4, 0.2],
                [0.3, 0.4, 0.3],
                [0.0, 0.0, 1.0]],
           ],
-          output=[[1., 0., 0.],
-                  [0., 0., 1.],
-                  [1., 0., 0.],
-                  [0., 1., 0.],
-                  [0., 0., 1.]]
+          output=[[1, 0, 0],
+                  [0, 1, 0],
+                  [1, 0, 0],
+                  [0, 1, 0],
+                  [0, 0, 1]]
       ),
   ]
   constants = []
   description = 'compute argmax in each tensor and set it to 1'
-  target_program = 'tf.one_hot(tf.argmax(in1, axis=1), 3)'
+  target_program = 'tf.cast(tf.one_hot(tf.argmax(in1, axis=1), 3), tf.int32)'
   source = 'https://stackoverflow.com/questions/44834739/argmax-on-a-tensor-and-ceiling-in-tensorflow'
   return benchmark.Benchmark(examples=examples,
                              constants=constants,

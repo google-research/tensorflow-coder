@@ -25,7 +25,8 @@ If you have used Colab before, feel free to skip this section.
 This only needs to be done once per session of using TF-Coder.
 
 1. Open the [TF-Coder Colab](https://colab.research.google.com/github/google-research/tensorflow-coder/blob/master/TF-Coder_Colab.ipynb).
-2. (TODO: connect to a runtime)
+2. Connect to a runtime by clicking the "Connect" button in the top right corner
+   of the notebook.
 3. Read the text in Step 0 of the Colab notebook. As explained in the cell, we
    would like to record the problems given to TF-Coder, as well as TF-Coder's
    solutions, in order to improve the tool and accelerate further research in
@@ -39,8 +40,8 @@ After performing the setup steps above, we are now ready to use the TF-Coder
 tool to solve problems.
 
 As a very simple example, suppose you want to "add" an `M`-element vector `rows`
-with an `N`-element vector `cols` in a broadcasted way to produce an `M` x `N`
-matrix containing all pairwise sums. For example, using `M` = 3 and `N` = 4:
+with an `N`-element vector `cols` in a broadcasted way to produce an `M x N`
+matrix containing all pairwise sums. For example, using `M = 3` and `N = 4`:
 
 ```
 rows = [10, 20, 30]
@@ -322,4 +323,3 @@ unambiguously identify the intended transformation.
     scalar tensor with shape `()`.
 
 * Input and output tensors can have at most 4 dimensions.
-

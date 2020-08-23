@@ -6,13 +6,19 @@ a useful tool, regardless of how much TensorFlow experience you already have. We
 hope that you will consider using TF-Coder when encountering similar scenarios
 in your own work.
 
+TF-Coder allows you to:
+* [Program in TensorFlow by example](#programming-in-tensorflow-by-example)
+* [Find the right function to use](#tf-coder-helps-you-find-the-right-function-to-use)
+* [Automatically combine functions in clever ways](#tf-coder-helps-you-combine-functions-in-clever-ways)
+* [Spend less time debugging](#tf-coder-helps-you-write-correct-code-with-less-debugging)
+
 ## Programming in TensorFlow by example
 
-Suppose you want to "add" an `M`-element vector with an N-element vector in a
-broadcasted way to produce an `M` x `N` matrix containing all pairwise sums.
+Suppose you want to "add" an `M`-element vector with an `N`-element vector in a
+broadcasted way to produce an `M x N` matrix containing all pairwise sums.
 Instead of digging through TensorFlow documentation to figure out how to do
-this, you can instead provide an input-output example (using `M` = 3 and `N` =
-4):
+this, you can instead provide an input-output example (using `M = 3` and
+`N =4`):
 
 Input tensors, as a dict mapping input variable names to example tensor values:
 ```
@@ -95,7 +101,7 @@ confirms that this code indeed performs the bucketing as desired.
 
 ## TF-Coder helps you combine functions in clever ways
 
-Now let's consider another problem: Compute a 0-1 tensor that identifies the
+Now let's consider another problem: compute a 0-1 tensor that identifies the
 maximum element of each row of the input tensor.
 
 ```
@@ -179,7 +185,6 @@ normalized = tf.divide(counts, tf.reduce_sum(counts, axis=1))
 ```
 
 Is this right? There are many potential pitfalls to think about:
-
 * Is the summation axis correct, or should it be `axis=0`?
 * Are the shapes of `counts` and `tf.reduce_sum(counts, axis=1)` compatible for
   division, or do you need to reshape or transpose either of these?

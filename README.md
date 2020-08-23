@@ -14,7 +14,6 @@ The TF-Coder tool is ready-to-use at this link. Everything is already packaged
 together in a Colab notebook, so no installation or download is needed.
 
 For more information about TF-Coder, see the following documents:
-
 * [**TF-Coder Tutorial**](Tutorial.md): walks you through using TF-Coder to
   solve tensor manipulation tasks, and provides tips on getting the most out of
   TF-Coder.
@@ -44,7 +43,6 @@ combinatorial search over compositions of TensorFlow operations, until it finds
 a TensorFlow expression that matches the given input-output example.
 
 TF-Coder allows you to:
-
 * Program in TensorFlow by example
 * Find the right function to use
 * Automatically combine functions in clever ways
@@ -78,8 +76,8 @@ will accelerate program synthesis research in general, but this data collection
 is completely optional.
 
 ## Tutorial and Further Reading
-For more information about TF-Coder, see the following documents:
 
+For more information about TF-Coder, see the following documents:
 * [**TF-Coder Tutorial**](Tutorial.md): walks you through using TF-Coder to
   solve tensor manipulation tasks, and provides tips on getting the most out of
   TF-Coder.
@@ -98,7 +96,6 @@ is sufficient for your use cases.
 
 However, if you would rather not use the Colab notebook, you can still install
 TF-Coder as a Python package yourself:
-
 ```
 pip install --user tf-coder
 ```
@@ -107,7 +104,6 @@ To run the TF-Coder search as a library, follow the code example in
 [`tf_coder_main.py`](tf_coder/tf_coder_main.py).
 
 To run TF-Coder on our benchmarks, run:
-
 ```
 python3 tf_coder/value_search/value_search_main.py
 ```
@@ -118,7 +114,6 @@ To run tests, clone the repository and run `pytest`.
 
 If you find TF-Coder helpful for a research project, you may cite our [research
 paper](https://arxiv.org/abs/2003.09040) as follows:
-
 ```
 @article{TFCoder,
     title={{TF-Coder}: Program Synthesis for Tensor Manipulations},

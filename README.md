@@ -59,8 +59,8 @@ There are limitations to TF-Coder. It can currently find solutions involving 3-4
 operations within a minute of searching, but solutions involving 6 or more
 operations are too complex to find in a reasonable amount of time. Furthermore,
 TF-Coder currently does not support complex or string tensors, or RaggedTensors.
-The full list of supported operations can be found here(TODO: link to the list
-in Colab).
+The full list of supported operations can be found in the
+[Colab notebook](https://colab.research.google.com/github/google-research/tensorflow-coder/blob/master/TF-Coder_Colab.ipynb#scrollTo=Q6uRr4x9WHRC).
 
 In addition, TF-Coder only guarantees that its solutions work for the given
 input-output example. The tool searches for a simple TensorFlow expression that

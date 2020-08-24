@@ -65,12 +65,12 @@ inputs = {
     'cols': [1, 2, 3, 4],
 }
 
-# The single desired output tensor.
+# The corresponding output tensor.
 output = [[11, 12, 13, 14],
           [21, 22, 23, 24],
           [31, 32, 33, 34]]
 
-# A list of relevant scalar constants (if any).
+# A list of relevant scalar constants, if any.
 constants = []
 
 # An English description of the tensor manipulation.

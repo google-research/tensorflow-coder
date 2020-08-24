@@ -249,17 +249,15 @@ def google_09():
   examples = [
       benchmark.Example(
           inputs=[
-              [10, 20, 30, 40, 50,
-               13, 17, 19,
-               21, 22, 23],
-              [1, 1, 1, 1, 1, 0, 0, 0, 2, 2, 2],
+              [1, 1, 1, 0, 0, 2],
+              [10, 20, 30, 14, 15, 26],
           ],
-          output=[13, 17, 19, 10, 20, 30, 40, 50, 21, 22, 23]
+          output=[14, 15, 10, 20, 30, 26]
       ),
   ]
   constants = []
-  description = 'reorder segments'
-  target_program = 'tf.gather(in1, tf.argsort(in2, stable=True))'
+  description = 'sort the segments'
+  target_program = 'tf.gather(in2, tf.argsort(in1, stable=True))'
   source = 'Real task encountered by Googler, 8/9/2019'
   return benchmark.Benchmark(examples=examples,
                              constants=constants,

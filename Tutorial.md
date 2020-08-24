@@ -17,9 +17,10 @@ If you have used Colab before, feel free to skip this section.
 * Variables persist between cell executions.
 * You can create new code cells by hovering between existing cells and clicking
   "+ Code".
-* When you open the TF-Coder Colab, it will be in _playground mode_, which means
-  any edits you make are only visible to you, and will be lost when you reload
-  the page.
+* In the TF-Coder Colab, any edits you make are only visible to you and will be
+  lost when you reload the page, unless you save a copy of the notebook. (If we
+  later make improvements to the Colab notebook, they will not appear in your
+  copy.)
 
 ## Setting up TF-Coder
 
@@ -41,9 +42,9 @@ This only needs to be done once per session of using TF-Coder.
 After performing the setup steps above, we are now ready to use the TF-Coder
 tool to solve problems.
 
-As a very simple example, suppose you want to "add" an `M`-element vector `rows`
-with an `N`-element vector `cols` in a broadcasted way to produce an `M x N`
-matrix containing all pairwise sums. For example, using `M = 3` and `N = 4`:
+As a very simple example, suppose you want to "add" an _M_-element vector `rows`
+with an _N_-element vector `cols` in a broadcasted way to produce an _M_ x _N_
+matrix containing all pairwise sums. For example, using _M_ = 3 and _N_ = 4:
 
 ```
 rows = [10, 20, 30]

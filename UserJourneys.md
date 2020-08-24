@@ -14,11 +14,11 @@ TF-Coder allows you to:
 
 ## Programming in TensorFlow by example
 
-Suppose you want to "add" an `M`-element vector with an `N`-element vector in a
-broadcasted way to produce an `M x N` matrix containing all pairwise sums.
+Suppose you want to "add" an _M_-element vector with an _N_-element vector in a
+broadcasted way to produce an _M_ x _N_ matrix containing all pairwise sums.
 Instead of digging through TensorFlow documentation to figure out how to do
-this, you can instead provide an input-output example (using `M = 3` and
-`N =4`):
+this, you can instead provide an input-output example (using _M_ = 3 and
+_N_ = 4):
 
 Input tensors, as a dict mapping input variable names to example tensor values:
 ```

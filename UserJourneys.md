@@ -78,8 +78,8 @@ bucketed_prices = [1, 0, 2, 2, 3, 4]
 ```
 
 Although TensorFlow comes with various bucketing operations, it may be tricky to
-figure out which specific operation does this exact kind of bucketing. Since TF-
-Coder can identify hundreds of Tensor operations by behavior, you can look up
+figure out which specific operation does this exact kind of bucketing. Since
+TF-Coder can identify hundreds of Tensor operations by behavior, you can look up
 the correct operation by providing an input-output example:
 
 ```
@@ -218,8 +218,8 @@ TF-Coder's solution is:
 
 By using TF-Coder to solve this problem, the mental burden of the exercise is
 reduced. When TF-Coder produces the solution above, it is guaranteed that the
-code correctly produces the example output when run on the example input. TF-
-Coder's solution will also avoid any unnecessary steps. Thus, you can quickly
+code correctly produces the example output when run on the example input.
+TF-Coder's solution will also avoid any unnecessary steps. Thus, you can quickly
 deduce the answers to most of the questions above: an extra `tf.expand_dims`
 step is needed to make the shapes compatible for division, and the result of
 `tf.divide` must be cast to `tf.float32` (in fact `tf.divide` returns a

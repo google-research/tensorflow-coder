@@ -1,8 +1,6 @@
 # TF-Coder Tutorial
 
-This is a tutorial for TF-Coder, a program synthesis tool for TensorFlow. You
-can find the code and documentation on
-[GitHub](https://github.com/google-research/tensorflow-coder).
+This is a tutorial for TF-Coder, a program synthesis tool for TensorFlow.
 
 ## Colab Basics
 
@@ -117,9 +115,9 @@ the desired transformation. In this case, TF-Coder produces a correct solution:
 
 <pre><b>tf.add(cols, tf.expand_dims(rows, 1))</b></pre>
 
-However, sometimes TF-Coder produces a solution that works for the given input-
-output example, but does not generalize fully. These solutions are called _false
-positives_.
+However, sometimes TF-Coder produces a solution that works for the given
+input-output example, but does not generalize fully. These solutions are called
+_false positives_.
 
 ### Dealing with False Positive Solutions
 
@@ -142,8 +140,8 @@ Note that we included the constant `5` because we suspect that it is necessary t
 solve this problem correctly.
 
 At first glance, this input-output example seems clear -- the output contains
-`8` and `7` because those are the only values greater than `5`. However, TF-
-Coder produces the following solution:
+`8` and `7` because those are the only values greater than `5`. However,
+TF-Coder produces the following solution:
 
 ```
 data[2:-1]
@@ -270,8 +268,8 @@ unambiguously identify the intended transformation.
 ### Constants
 
 * TF-Coder will print out the list of constants that it is using, including
-  constants chosen through heuristics. This list is ordered with highest-
-  priority constants at the beginning.
+  constants chosen through heuristics. This list is ordered with
+  highest-priority constants at the beginning.
 * If the intended solution requires a constant that is not in TF-Coder's printed
   list of constants, then TF-Coder will be _unable_ to find the intended
   solution. So, it is important to provide any necessary constants.

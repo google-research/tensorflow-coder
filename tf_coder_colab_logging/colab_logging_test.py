@@ -16,7 +16,9 @@
 """Tests for colab_logging.py."""
 
 from absl.testing import absltest
+from tf_coder import version as tf_coder_version
 from tf_coder_colab_logging import colab_logging
+from tf_coder_colab_logging import version as logging_version
 from tf_coder.value_search import colab_interface
 from tf_coder.value_search import value_search_settings as settings_module
 
@@ -86,6 +88,30 @@ class ColabLoggingTest(absltest.TestCase):
     colab_logging._IPYTHON_MOCK.display.Javascript.assert_not_called()
 
     colab_logging.NUM_DIMENSIONS = old_num_dimensions
+
+  def test_version(self):
+    inputs = {
+        'rows': [10, 20, 30],
+        'cols': [1, 2, 3, 4],
+    }
+    output = [[11, 12, 13, 14],
+              [21, 22, 23, 24],
+              [31, 32, 33, 34]]
+    constants = []
+    description = 'add two vectors with broadcasting to get a matrix'
+    logging_dict = colab_logging.get_problem_logging_dict(
+        inputs=inputs,
+        output=output,
+        constants=constants,
+        description=description,
+        settings=settings_module.from_dict({'timeout': 99}),
+        include_in_dataset=False,
+        problem_id=123)
+    self.assertEqual(logging_dict['tf_coder_version'],
+                     tf_coder_version.__version__)
+    self.assertEqual(logging_dict['logging_version'],
+                     logging_version.__version__)
+
 
 if __name__ == '__main__':
   absltest.main()

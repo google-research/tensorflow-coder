@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""The Colab logging portion of TF-Coder."""
+"""Version for the Colab logging portion of TF-Coder."""
 
-from tf_coder_colab_logging import version
-
-__version__ = version.__version__
+__version__ = '0.0.2'

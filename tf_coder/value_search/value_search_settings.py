@@ -27,9 +27,9 @@ class Settings(object):
     # A string describing the current version of the search algorithm.
     self.algorithm_version = (
         'Value search, '
-        'Naive Bayes description handler (k=3, p=0.5), '
+        'TF-IDF (k=5, min_score=0.15), '
         'tensor features model with F_1 loss and max weighting, '
-        '2020/03/12')
+        '2020/08/26')
 
     # Time limit in seconds.
     self.timeout = 60

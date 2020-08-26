@@ -17,7 +17,9 @@
 
 import uuid
 
+from tf_coder import version as tf_coder_version
 from tf_coder_colab_logging import serialization
+from tf_coder_colab_logging import version as logging_version
 
 try:
   # pytype: disable=import-error
@@ -109,6 +111,8 @@ def get_problem_logging_dict(inputs, output, constants, description, settings,
       'include_in_dataset': include_in_dataset,
       'problem_id': problem_id,
       'session_id': SESSION_ID,
+      'tf_coder_version': tf_coder_version.__version__,
+      'logging_version': logging_version.__version__,
   }
 
 

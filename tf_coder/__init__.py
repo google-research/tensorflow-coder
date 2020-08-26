@@ -14,4 +14,6 @@
 
 """TF-Coder."""
 
-__version__ = '0.0.1'
+from tf_coder import version
+
+__version__ = version.__version__

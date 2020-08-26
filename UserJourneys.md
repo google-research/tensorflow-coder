@@ -30,9 +30,9 @@ inputs = {
 
 The desired output tensor, corresponding to the provided input tensors:
 ```
-output = [[11, 21, 31, 41],
-          [12, 22, 32, 42],
-          [13, 23, 33, 43]]
+output = [[11, 12, 13, 14],
+          [21, 22, 23, 24],
+          [31, 32, 33, 34]]
 ```
 
 Given this information (already entered into the TF-Coder Colab by default), the

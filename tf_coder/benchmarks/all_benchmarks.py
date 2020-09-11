@@ -17,13 +17,14 @@
 
 import inspect
 
+from tf_coder.benchmarks import autopandas_benchmarks
 from tf_coder.benchmarks import google_benchmarks
 from tf_coder.benchmarks import simple_benchmarks
 from tf_coder.benchmarks import stackoverflow_benchmarks
 
 
 _ALL_BENCHMARK_MODULES = [google_benchmarks, simple_benchmarks,
-                          stackoverflow_benchmarks]
+                          stackoverflow_benchmarks, autopandas_benchmarks]
 
 
 def all_benchmarks(include_ignored=False, modules=None):

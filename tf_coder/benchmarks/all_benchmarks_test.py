@@ -75,6 +75,8 @@ class AllBenchmarksTest(parameterized.TestCase):
 
   def test_all_benchmarks_have_description(self):
     for benchmark in all_benchmarks.all_benchmarks(include_ignored=False):
+      if benchmark.name.startswith('autopandas_'):
+        continue  # AutoPandas benchmarks don't have descriptions.
       self.assertTrue(benchmark.description)
 
   def test_all_benchmarks_have_reason_if_ignored(self):

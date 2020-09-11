@@ -26,6 +26,7 @@ from absl import flags
 import numpy as np
 from scipy.stats import mstats
 from tf_coder.benchmarks import all_benchmarks
+from tf_coder.benchmarks import autopandas_benchmarks
 from tf_coder.benchmarks import google_benchmarks
 from tf_coder.benchmarks import stackoverflow_benchmarks
 from tf_coder.models import tensor_features_model
@@ -104,7 +105,7 @@ def run_on_all_benchmarks():
     tensor_model = None
 
   print('=' * 80)
-  modules = [google_benchmarks, stackoverflow_benchmarks]
+  modules = [google_benchmarks, stackoverflow_benchmarks, autopandas_benchmarks]
   for benchmark in all_benchmarks.get_chosen_benchmarks(
       FLAGS.benchmark_name, modules=modules):
     gc.collect()

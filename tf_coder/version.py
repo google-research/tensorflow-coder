@@ -1,4 +1,4 @@
-# Copyright 2020 The TF-Coder Authors.
+# Copyright 2021 The TF-Coder Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,4 +14,4 @@
 
 """Version for TF-Coder."""
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'

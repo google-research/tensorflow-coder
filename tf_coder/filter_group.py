@@ -1,4 +1,4 @@
-# Copyright 2020 The TF-Coder Authors.
+# Copyright 2021 The TF-Coder Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -198,11 +198,19 @@ class FilterGroup(enum.Enum):
   # The second and third arguments must be int primitives, lists of ints, or 1D
   # int tensors, and they must have the same shape.
   ROLL_3 = 'ROLL_3'
+  # In tf.scatter_nd(indices, updates, shape), `indices` must be an int tensor
+  # representing valid indices, `shape` must be a shape tuple, and `updates`
+  # must have a compatible shape with `indices` and `shape`.
+  SCATTER_ND_3 = 'SCATTER_ND_3'
   # In tf.sparse.slice(sp_input, start, size), the arguments start and size must
   # be 1D (ints) with the same length as sp_input.dense_shape.
   SPARSE_SLICE_3 = 'SPARSE_SLICE_3'
   # The arguments must have the right shape to make a SparseTensor.
   SPARSETENSOR_3 = 'SPARSETENSOR_3'
+  # In tf.tensor_scatter_nd_update(tensor, indices, updates), `indices` must be
+  # an int tensor representing valid indices, and `updates` must have a
+  # compatible shape and be the same dtype as `tensor`.
+  TENSOR_SCATTER_ND_UPDATE_3 = 'TENSOR_SCATTER_ND_UPDATE_3'
   # The first two arguments are tensors with the same dtype, and the third
   # contains ints of the appropriate shape.
   TENSORDOT_3 = 'TENSORDOT_3'

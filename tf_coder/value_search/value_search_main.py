@@ -1,4 +1,4 @@
-# Copyright 2020 The TF-Coder Authors.
+# Copyright 2021 The TF-Coder Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('benchmark_name', 'ALL',
                     'The name of a benchmark to run, or "ALL".')
 flags.DEFINE_multi_string('settings',
-                          ['timeout=300', 'max_solutions=3'],
+                          ['timeout=300'],
                           'Settings to override the defaults.')
 flags.DEFINE_string(
     'json_output',

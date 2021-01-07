@@ -1,4 +1,4 @@
-# Copyright 2020 The TF-Coder Authors.
+# Copyright 2021 The TF-Coder Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -334,6 +334,9 @@ TF_FUNCTIONS = [
     FunctionInfo(name='tf.round(x)',
                  filter_group=FilterGroup.FLOATTENSOR_1,
                  weight=52),
+    FunctionInfo(name='tf.scatter_nd(indices, updates, shape)',
+                 filter_group=FilterGroup.SCATTER_ND_3,
+                 weight=52),
     FunctionInfo(name="tf.searchsorted(sorted_sequence, values, side='left')",
                  filter_group=FilterGroup.SEARCHSORTED_2,
                  weight=56),
@@ -376,6 +379,9 @@ TF_FUNCTIONS = [
     FunctionInfo(name='tf.subtract(x, y)',
                  filter_group=FilterGroup.SAME_DTYPE_NUMERIC_BROADCASTABLE_2,
                  weight=28),
+    FunctionInfo(name='tf.tensor_scatter_nd_update(tensor, indices, updates)',
+                 filter_group=FilterGroup.TENSOR_SCATTER_ND_UPDATE_3,
+                 weight=44),
     FunctionInfo(name='tf.tensordot(a, b, axes)',
                  filter_group=FilterGroup.TENSORDOT_3,
                  weight=24),

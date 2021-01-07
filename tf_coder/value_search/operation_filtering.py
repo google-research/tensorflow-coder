@@ -1,4 +1,4 @@
-# Copyright 2020 The TF-Coder Authors.
+# Copyright 2021 The TF-Coder Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -301,6 +301,16 @@ def BATCH_DIMS_FILTER(arg_value):
   """Must be an int representing a number of batch dimensions."""
   return (arg_value.type is int and
           0 <= arg_value.value < limits.MAX_NUM_DIMENSIONS)
+
+
+def SCATTER_INDICES_FILTER(arg_value):
+  """Must be an int tensor appropriate for indices in scatter operations."""
+  return (arg_value.is_tensor and
+          arg_value.has_int_dtype and
+          len(arg_value.shape) >= 2 and
+          arg_value.shape[-1] <= limits.MAX_NUM_DIMENSIONS and
+          arg_value.min() >= 0 and
+          arg_value.max() < limits.MAX_DIMENSION_LENGTH)
 
 
 def SAME_DTYPES_APPLY_FILTER(arg_values):
@@ -785,6 +795,19 @@ def add_filters_to_function_operation(function_operation):
                 axis.max() < len(tensor.shape))
     function_operation.set_apply_filter(_roll_apply_filter)
 
+  elif group == filter_group.FilterGroup.SCATTER_ND_3:
+    function_operation.add_value_filters([SCATTER_INDICES_FILTER,
+                                          TENSOR_FILTER,
+                                          SHAPE_FILTER])
+    def _scatter_nd_apply_filter(arg_values):
+      indices, updates, shape = arg_values
+      index_depth = indices.shape[-1]
+      return (index_depth <= len(shape.value) and
+              indices.max() < shape.max() and
+              updates.shape == (indices.shape[:-1] +
+                                list(shape.value[index_depth:])))
+    function_operation.set_apply_filter(_scatter_nd_apply_filter)
+
   elif group == filter_group.FilterGroup.SPARSE_SLICE_3:
     def _contains_ints_1d_nonnegative_filter(arg_value):
       return CONTAINS_INTS_1D_FILTER(arg_value) and arg_value.min() >= 0
@@ -826,6 +849,20 @@ def add_filters_to_function_operation(function_operation):
       return (indices.shape[0] == values.shape[0] and
               indices.shape[1] == len(dense_shape.value))
     function_operation.set_apply_filter(_sparsetensor_apply_filter)
+
+  elif group == filter_group.FilterGroup.TENSOR_SCATTER_ND_UPDATE_3:
+    function_operation.add_value_filters([TENSOR_FILTER,
+                                          SCATTER_INDICES_FILTER,
+                                          TENSOR_FILTER])
+    def _tensor_scatter_nd_update_apply_filter(arg_values):
+      tensor, indices, updates = arg_values
+      index_depth = indices.shape[-1]
+      return (updates.dtype == tensor.dtype and
+              index_depth <= len(tensor.shape) and
+              indices.max() < max(tensor.shape) and
+              updates.shape == (list(indices.shape[:-1]) +
+                                tensor.shape[index_depth:]))
+    function_operation.set_apply_filter(_tensor_scatter_nd_update_apply_filter)
 
   elif group == filter_group.FilterGroup.TENSORDOT_3:
     def _tensordot_arg_3_filter(arg_value):

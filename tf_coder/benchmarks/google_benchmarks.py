@@ -1,4 +1,4 @@
-# Copyright 2020 The TF-Coder Authors.
+# Copyright 2021 The TF-Coder Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -519,6 +519,50 @@ def google_20():
                              target_program=target_program,
                              source=source,
                              name='google_20')
+
+
+def google_21():
+  examples = [
+      benchmark.Example(
+          inputs={
+              'tensor': [[1, 2, 3, 4, 5], [4, 5, 6, 7, 8], [7, 8, 9, 10, 11]],
+              'indices': [[0, 0], [0, 2], [1, 1], [1, 3], [2, 2], [2, 4]],
+              'updates': [[0, -2], [-1, -3], [-2, -4]],
+          },
+          output=[[0, 2, -2, 4, 5], [4, -1, 6, -3, 8], [7, 8, -2, 10, -4]]
+      ),
+  ]
+  constants = []
+  description = 'update a tensor at the given indices'
+  target_program = 'tf.tensor_scatter_nd_update(tensor, indices, tf.reshape(updates, (-1,)))'
+  source = 'Real task encountered by Googler, 12/15/2020'
+  return benchmark.Benchmark(examples=examples,
+                             constants=constants,
+                             description=description,
+                             target_program=target_program,
+                             source=source,
+                             name='google_21')
+
+
+def google_22():
+  examples = [
+      benchmark.Example(
+          inputs=[
+              [[0, 2], [1, 3], [2, 4]],
+          ],
+          output=[[0, 0], [0, 2], [1, 1], [1, 3], [2, 2], [2, 4]]
+      ),
+  ]
+  constants = []
+  description = 'pair with row index'
+  target_program = 'tf.cast(tf.where(tf.reduce_max(tf.one_hot(in1, tf.reduce_max(in1) + 1), axis=1)), tf.int32)'
+  source = 'Real task encountered by Googler, 12/15/2020'
+  return benchmark.Benchmark(examples=examples,
+                             constants=constants,
+                             description=description,
+                             target_program=target_program,
+                             source=source,
+                             name='google_22')
 
 
 # A template for easy copy/pasting. Copying an existing benchmark and replacing

@@ -63,7 +63,11 @@ def load_gtag():
        {'referrer': document.referrer.split('?')[0],
         'anonymize_ip': true,
         'page_title': '',
-        'page_referrer': ''});
+        'page_referrer': '',
+        'cookie_prefix': 'tf_coder',
+        'cookie_domain': 'auto',
+        'cookie_expires': 0,
+        'cookie_flags': 'SameSite=None;Secure'});
 </script>
 '''
   IPython.display.display(IPython.display.HTML(html_code))

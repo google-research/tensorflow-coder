@@ -324,3 +324,28 @@ def simple_using_primitive_input():
                              target_program=target_program,
                              source=source,
                              name='simple_using_primitive_input')
+
+
+def simple_with_many_inputs():
+  """A benchmark with many input tensors."""
+  examples = [
+      benchmark.Example(
+          inputs={
+              'params': [[[11, 22, 33], [44, 55, 66]]],
+              'indices': [[2, 1]],
+              'axis': 2,
+              'batch_dims': 1,
+          },
+          output=[[[33, 22], [66, 55]]],
+      ),
+  ]
+  constants = []
+  description = 'Use tf.gather'
+  target_program = 'tf.gather(params, indices, axis=axis, batch_dims=batch_dims)'
+  source = 'handwritten task'
+  return benchmark.Benchmark(examples=examples,
+                             constants=constants,
+                             description=description,
+                             target_program=target_program,
+                             source=source,
+                             name='simple_with_many_inputs')

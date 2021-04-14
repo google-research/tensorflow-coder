@@ -539,8 +539,7 @@ def get_reweighted_operations(
   if description_handler and benchmark.description:
     multipliers = _combine_multipliers(
         multipliers,
-        description_handler.get_operation_multipliers(
-            benchmark.description, settings))
+        description_handler.get_operation_multipliers(benchmark, settings))
   if tensor_model is not None and tensor_config is not None:
     multipliers = _combine_multipliers(
         multipliers,

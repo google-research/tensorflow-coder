@@ -202,8 +202,6 @@ def extract_operations(
     operation_list = []
 
   if isinstance(value, value_module.OperationValue):
-    if len(value.operation_applications) != 1:
-      raise ValueError('Expected exactly one way of constructing this Value.')
     operation_list.append(value.operation_applications[0].operation)
     for child in value.operation_applications[0].arg_values:
       extract_operations(child, operation_list)
@@ -554,10 +552,9 @@ def create_examples(io_example: IOExample,
       [op.name for op in io_example.operations])
   operation_counts = [operation_counter[op.name] for op in operation_list]
 
-  num_inputs = len(io_example.input_values)
+  num_inputs = min(len(io_example.input_values), max_num_inputs)
 
   try:
-    num_inputs_feature = min(num_inputs, max_num_inputs)
     output_features = featurize_value(io_example.output_value)
     input_features = []
     for input_value in io_example.input_values[:max_num_inputs]:
@@ -580,7 +577,7 @@ def create_examples(io_example: IOExample,
   for permutation in permutations:
 
     feature_dict = collections.defaultdict(list)
-    feature_dict['num_inputs'] = [num_inputs_feature]
+    feature_dict['num_inputs'] = [num_inputs]
     feature_dict.update(copy.deepcopy(output_features))
 
     padded_input_features = [input_features[index] for index in permutation]

@@ -19,6 +19,7 @@ from typing import Dict, List, Optional, Text
 
 from sklearn.feature_extraction import text as sklearn_text
 from sklearn.metrics import pairwise as sklearn_pairwise
+from tf_coder.benchmarks import benchmark as benchmark_module
 from tf_coder.natural_language import description_handler
 from tf_coder.value_search import operation_base
 from tf_coder.value_search import value_search_settings as settings_module
@@ -72,11 +73,10 @@ class TfidfDescriptionHandler(description_handler.DescriptionHandler):
     return dict(zip(self.all_names, scores))
 
   def get_operation_multipliers(
-      self,
-      description: Text,
+      self, benchmark: benchmark_module.Benchmark,
       settings: settings_module.Settings) -> Dict[Text, float]:
     """See base class."""
-    scores = self.score_description(description)
+    scores = self.score_description(benchmark.description)
     # Sorted in order of decreasing TF-IDF score.
     sorted_names = sorted(self.all_names,
                           key=lambda name: scores[name], reverse=True)

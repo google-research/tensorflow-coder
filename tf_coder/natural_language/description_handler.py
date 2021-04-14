@@ -20,6 +20,7 @@ import re
 from typing import Dict, List, Optional, Text
 
 import six
+from tf_coder.benchmarks import benchmark as benchmark_module
 from tf_coder.value_search import all_operations
 from tf_coder.value_search import operation_base
 from tf_coder.value_search import value_search_settings as settings_module
@@ -54,8 +55,7 @@ class DescriptionHandler(object):
 
   @abc.abstractmethod
   def get_operation_multipliers(
-      self,
-      description: Text,
+      self, benchmark: benchmark_module.Benchmark,
       settings: settings_module.Settings) -> Dict[Text, float]:
     """Returns a map from operation names to their weight multiplier.
 
@@ -63,8 +63,7 @@ class DescriptionHandler(object):
     prioritized, or greater than 1 if it should be deprioritized.
 
     Args:
-      description: The natural language description of a TF-Coder task, provided
-        by the user.
+      benchmark: Benchmark object corresponding to the TF-Coder task.
       settings: A Settings object storing settings for this search.
 
     Returns:
@@ -83,8 +82,7 @@ class NoChangeDescriptionHandler(DescriptionHandler):
   """A description handler that does not change any operation weights."""
 
   def get_operation_multipliers(
-      self,
-      description: Text,
+      self, benchmark: benchmark_module.Benchmark,
       settings: settings_module.Settings) -> Dict[Text, float]:
     """See base class."""
     return {}
@@ -108,11 +106,10 @@ class FunctionNameDescriptionHandler(DescriptionHandler):
     self.multiplier = multiplier
 
   def get_operation_multipliers(
-      self,
-      description: Text,
+      self, benchmark: benchmark_module.Benchmark,
       settings: settings_module.Settings) -> Dict[Text, float]:
     """See base class."""
-    description = description.lower()
+    description = benchmark.description.lower()
     multipliers = {}
     for name in self.all_names:
       if name.startswith('tf.') and '(' in name:

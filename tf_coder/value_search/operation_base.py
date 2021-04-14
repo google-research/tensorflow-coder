@@ -259,14 +259,14 @@ class Operation(object):
       arg_options_list = []  # type: List[ArgOptionsType]
       for partition in tf_coder_utils.generate_partitions(
           target_weight - self.weight - num_args,
-          num_args):  # type: Tuple[int, ...]
+          num_args):  # type: Tuple[int, ...]  # pytype: disable=annotation-type-mismatch
         if (settings.paper_experiments.skip_filtering and
             self.name not in tf_functions.REQUIRES_FILTERING):
           # Only for experiments in the PLDI paper.
           arg_options = [
               values_by_weight[weight_minus_1 + 1]
               for arg, weight_minus_1 in enumerate(partition)
-          ]  # type: ArgOptionsType
+          ]  # type: ArgOptionsType  # pytype: disable=annotation-type-mismatch
         else:
           arg_options = [
               filter_cache.filter_values(value_filters[arg], weight_minus_1 + 1,

@@ -17,6 +17,8 @@
 
 from absl.testing import absltest
 from absl.testing import parameterized
+from tf_coder.benchmarks import benchmark as benchmark_module
+from tf_coder.benchmarks import test_benchmarks
 from tf_coder.natural_language import description_handler
 from tf_coder.value_search import python_operations
 from tf_coder.value_search import value_search_settings as settings_module
@@ -50,7 +52,7 @@ class NoChangeDescriptionHandlerTest(absltest.TestCase):
 
   def test_get_operation_multipliers(self):
     handler = description_handler.NoChangeDescriptionHandler()
-    multipliers = handler.get_operation_multipliers('dummy description',
+    multipliers = handler.get_operation_multipliers(test_benchmarks.test_add(),
                                                     self.settings)
     self.assertEmpty(multipliers)
 
@@ -73,8 +75,23 @@ class FunctionNameDescriptionHandlerTest(parameterized.TestCase):
   def test_get_operation_multipliers(self, description, operation_name,
                                      expected_multiplier):
     handler = description_handler.FunctionNameDescriptionHandler()
+    benchmark = benchmark_module.Benchmark(
+        examples=[
+            benchmark_module.Example(
+                inputs=[
+                    [10],
+                    [20],
+                ],
+                output=[30],
+            ),
+        ],
+        constants=[],
+        description=description,
+        target_program='',
+        source='test',
+        name='test_benchmark')
     multipliers = handler.get_operation_multipliers(
-        description, settings_module.default_settings())
+        benchmark, settings_module.default_settings())
     self.assertEqual(multipliers.get(operation_name, 1.0), expected_multiplier)
     # Nothing is deprioritized.
     self.assertTrue(all(0 < value < 1 for value in multipliers.values()))

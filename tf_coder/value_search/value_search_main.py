@@ -19,6 +19,7 @@ import gc
 import json
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Must happen before importing tf.
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # CPU is faster than GPU.
 import sys  # pylint: disable=g-import-not-at-top
 
 from absl import app
@@ -29,6 +30,7 @@ from tf_coder.benchmarks import all_benchmarks
 from tf_coder.benchmarks import autopandas_benchmarks
 from tf_coder.benchmarks import google_benchmarks
 from tf_coder.benchmarks import stackoverflow_benchmarks
+from tf_coder.datasets import collect_tensor_data
 from tf_coder.models import tensor_features_model
 from tf_coder.natural_language import description_handler_factory
 from tf_coder.value_search import value_search
@@ -65,7 +67,8 @@ flags.register_validator('benchmark_name', benchmark_name_validator,
 
 
 
-def run_on_all_benchmarks():
+def run_on_all_benchmarks(settings, description_handler, json_output,
+                          benchmark_name, notes):
   """Runs value search on all benchmarks, printing results to stdout."""
 
   benchmark_count = 0
@@ -73,16 +76,10 @@ def run_on_all_benchmarks():
   unsolved_benchmarks = []
   solution_times = []  # Only including successful tasks.
 
-  settings = settings_module.from_list(FLAGS.settings)
-
-  description_handler = description_handler_factory.create_handler(
-      settings.description_handler_name)
-  print('Description handler: {!r}\n'.format(description_handler))
-
   results_json = {
-      'benchmark_name': FLAGS.benchmark_name,
+      'benchmark_name': benchmark_name,
       'settings': settings.as_dict(),
-      'notes': FLAGS.notes,
+      'notes': notes,
       'results': [],
   }
 
@@ -107,7 +104,7 @@ def run_on_all_benchmarks():
   print('=' * 80)
   modules = [google_benchmarks, stackoverflow_benchmarks, autopandas_benchmarks]
   for benchmark in all_benchmarks.get_chosen_benchmarks(
-      FLAGS.benchmark_name, modules=modules):
+      benchmark_name, modules=modules):
     gc.collect()
 
     print('Performing value search for benchmark {}.\n'
@@ -147,6 +144,10 @@ def run_on_all_benchmarks():
         'solution': solutions[0].expression if solutions else None,
         'solution_weight': solutions[0].weight if solutions else None,
         'time': solutions[0].time if solutions else None,
+        'operations': (
+            [op.name for op in collect_tensor_data.extract_operations(
+                solutions[0].value)]
+            if solutions else None),
     })
 
   solve_time_total = sum(solution_times)
@@ -172,19 +173,26 @@ def run_on_all_benchmarks():
         unsolved.name, unsolved.target_program))
   print()
 
-  if FLAGS.json_output and FLAGS.benchmark_name == 'ALL':
-    with open(FLAGS.json_output, 'w') as json_file:
+  if json_output and benchmark_name == 'ALL':
+    with open(json_output, 'w') as json_file:
       json.dump(results_json, json_file,
                 indent=4, sort_keys=True, separators=(',', ': '))
       json_file.write('\n')
-    print('Wrote JSON results to {}.'.format(FLAGS.json_output))
+    print('Wrote JSON results to {}.'.format(json_output))
   else:
     print('Did not write JSON results file.')
 
 
 def main(unused_argv):
 
-  run_on_all_benchmarks()
+  settings = settings_module.from_list(FLAGS.settings)
+  description_handler = description_handler_factory.create_handler(
+      settings.description_handler_name)
+  print('Description handler: {!r}\n'.format(description_handler))
+
+  run_on_all_benchmarks(settings, description_handler, FLAGS.json_output,
+                        FLAGS.benchmark_name, FLAGS.notes)
+
 
 if __name__ == '__main__':
   app.run(main)

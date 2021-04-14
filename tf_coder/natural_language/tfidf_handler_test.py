@@ -19,6 +19,7 @@ from absl.testing import absltest
 from absl.testing import parameterized
 import mock
 import numpy as np
+from tf_coder.benchmarks import benchmark as benchmark_module
 from tf_coder.natural_language import tfidf_handler
 from tf_coder.value_search import value_search_settings as settings_module
 
@@ -91,9 +92,23 @@ class TfidfHandlerTest(parameterized.TestCase):
         max_num_prioritized=max_num_prioritized,
         min_tfidf_score=0)
 
+    benchmark = benchmark_module.Benchmark(
+        examples=[
+            benchmark_module.Example(
+                inputs=[
+                    [10],
+                    [20],
+                ],
+                output=[30],
+            ),
+        ],
+        constants=[],
+        description='Tile a tensor multiple times',
+        target_program='',
+        source='test',
+        name='test_benchmark')
     multipliers = handler.get_operation_multipliers(
-        'Tile a tensor multiple times',
-        settings=settings_module.default_settings())
+        benchmark, settings=settings_module.default_settings())
 
     actual_num_prioritized = sum(multiplier < 1
                                  for multiplier in multipliers.values())
@@ -112,8 +127,23 @@ class TfidfHandlerTest(parameterized.TestCase):
 
     description = 'Tile a tensor multiple times'
     scores = handler.score_description(description)
+    benchmark = benchmark_module.Benchmark(
+        examples=[
+            benchmark_module.Example(
+                inputs=[
+                    [10],
+                    [20],
+                ],
+                output=[30],
+            ),
+        ],
+        constants=[],
+        description=description,
+        target_program='',
+        source='test',
+        name='test_benchmark')
     multipliers = handler.get_operation_multipliers(
-        description, settings=settings_module.default_settings())
+        benchmark, settings=settings_module.default_settings())
 
     prioritized_names = [name for name in multipliers.keys()
                          if multipliers[name] < 1]

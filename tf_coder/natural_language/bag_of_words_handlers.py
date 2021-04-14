@@ -22,6 +22,7 @@ from sklearn import ensemble
 from sklearn import feature_extraction
 from sklearn import naive_bayes
 from sklearn import svm
+from tf_coder.benchmarks import benchmark as benchmark_module
 from tf_coder.datasets.github import data_loader
 from tf_coder.datasets.github import tokenizer
 from tf_coder.natural_language import description_handler
@@ -156,11 +157,10 @@ class BagOfWordsDescriptionHandler(description_handler.DescriptionHandler):
     return probas
 
   def get_operation_multipliers(
-      self,
-      description: Text,
+      self, benchmark: benchmark_module.Benchmark,
       settings: settings_module.Settings) -> Dict[Text, float]:
     """See base class."""
-    scores = self.score_description(description)
+    scores = self.score_description(benchmark.description)
 
     sorted_names = sorted(self.all_names,
                           key=lambda name: scores[name], reverse=True)

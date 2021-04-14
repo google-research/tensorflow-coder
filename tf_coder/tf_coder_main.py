@@ -23,6 +23,7 @@ Usage:
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Must happen before importing tf.
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # CPU is faster than GPU.
 
 from absl import app  # pylint: disable=g-import-not-at-top
 import numpy as np  # pylint: disable=unused-import

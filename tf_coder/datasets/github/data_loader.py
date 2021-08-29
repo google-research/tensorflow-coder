@@ -67,7 +67,7 @@ def _as_python_example(
 def load_data(prefix) -> List[Dict[Text, List[Text]]]:
   filenames = tf.io.gfile.glob(prefix + '*')
   dataset = tf.data.TFRecordDataset(filenames)
-  dataset = dataset.map(parse_example_proto)
+  dataset = dataset.map(parse_example_proto,num_parallel_calls=tf.data.AUTOTUNE)
   return [_as_python_example(example) for example in dataset]
 
 

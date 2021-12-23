@@ -29,7 +29,6 @@ CONTACT_MESSAGE = (
     'If you see this message, please raise a GitHub issue '
     '(https://github.com/google-research/tensorflow-coder/issues) describing '
     'what happened.')
-# TODO(kshi): Add a link to GitHub.
 
 # The global description handler for this session. This will be loaded during
 # warm_up().

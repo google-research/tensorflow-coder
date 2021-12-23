@@ -21,9 +21,10 @@ from tf_coder.benchmarks import autopandas_benchmarks
 from tf_coder.benchmarks import google_benchmarks
 from tf_coder.benchmarks import simple_benchmarks
 from tf_coder.benchmarks import stackoverflow_benchmarks
+from tf_coder.benchmarks import test_benchmarks
 
 
-_ALL_BENCHMARK_MODULES = [google_benchmarks, simple_benchmarks,
+_ALL_BENCHMARK_MODULES = [test_benchmarks, simple_benchmarks, google_benchmarks,
                           stackoverflow_benchmarks, autopandas_benchmarks]
 
 

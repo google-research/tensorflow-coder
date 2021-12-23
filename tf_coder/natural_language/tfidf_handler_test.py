@@ -88,25 +88,15 @@ class TfidfHandlerTest(parameterized.TestCase):
       ('0', 0), ('1', 1), ('2', 2), ('5', 5), ('10', 10))
   def test_get_operation_multiplier_respects_max_num_prioritized(
       self, max_num_prioritized):
+    # Note: More operations may be prioritized if they are chosen because they
+    # are explicitly listed in the description.
     handler = tfidf_handler.TfidfDescriptionHandler(
         max_num_prioritized=max_num_prioritized,
         min_tfidf_score=0)
 
     benchmark = benchmark_module.Benchmark(
-        examples=[
-            benchmark_module.Example(
-                inputs=[
-                    [10],
-                    [20],
-                ],
-                output=[30],
-            ),
-        ],
-        constants=[],
-        description='Tile a tensor multiple times',
-        target_program='',
-        source='test',
-        name='test_benchmark')
+        examples=[benchmark_module.Example(inputs=[1], output=1)],
+        description='Tiling a tensor multiple times')
     multipliers = handler.get_operation_multipliers(
         benchmark, settings=settings_module.default_settings())
 
@@ -121,27 +111,17 @@ class TfidfHandlerTest(parameterized.TestCase):
       ('0', 0.0), ('0_1', 0.1), ('0_2', 0.2), ('1_0', 1.0))
   def test_get_operation_multipliers_respects_min_tfidf_score(
       self, min_tfidf_score):
+    # Note: An operation may violate the `min_tfidf_score` threshold if it is
+    # chosen because it is explicitly listed in the description.
     handler = tfidf_handler.TfidfDescriptionHandler(
         max_num_prioritized=1000000,
         min_tfidf_score=min_tfidf_score)
 
-    description = 'Tile a tensor multiple times'
+    description = 'Tiling a tensor multiple times'
     scores = handler.score_description(description)
     benchmark = benchmark_module.Benchmark(
-        examples=[
-            benchmark_module.Example(
-                inputs=[
-                    [10],
-                    [20],
-                ],
-                output=[30],
-            ),
-        ],
-        constants=[],
-        description=description,
-        target_program='',
-        source='test',
-        name='test_benchmark')
+        examples=[benchmark_module.Example(inputs=[1], output=1)],
+        description=description)
     multipliers = handler.get_operation_multipliers(
         benchmark, settings=settings_module.default_settings())
 
@@ -153,6 +133,50 @@ class TfidfHandlerTest(parameterized.TestCase):
     # All multipliers must be in (0, 1] (no operation is deprioritized).
     self.assertTrue(all(0 < multiplier <= 1
                         for multiplier in multipliers.values()))
+
+  @parameterized.named_parameters(
+      ('gather', 'gather', [
+          'tf.gather(params, indices)',
+          'tf.gather(params, indices, axis, batch_dims)',
+      ], [
+          'tf.gather_nd(params, indices)',
+          'tf.gather_nd(params, indices, batch_dims)',
+      ]),
+      ('gather_nd', 'use tf.gather_nd(params, indices)', [
+          'tf.gather_nd(params, indices)',
+          'tf.gather_nd(params, indices, batch_dims)',
+      ], [
+          'tf.gather(params, indices)',
+          'tf.gather(params, indices, axis, batch_dims)',
+      ]),
+      ('alias', 'tf.math.add', [
+          'tf.add(x, y)',
+      ], [
+          'tf.math.add(x, y)',  # This is not an operation name (wrong alias).
+      ]),
+      ('multiple', 'divide_no_nan and then reduce_max', [
+          'tf.math.divide_no_nan(x, y)',
+          'tf.reduce_max(input_tensor)',
+          'tf.reduce_max(input_tensor, axis)',
+          'tf.sparse.reduce_max(sp_input, axis, output_is_sparse)',
+      ], [
+          'tf.divide(x, y)',
+          'tf.reduce_min(input_tensor)',
+      ]),
+      ('heuristic_is_not_perfect', 'add padding', [
+          'tf.add(x, y)',
+      ], [
+          "tf.pad(tensor, paddings, mode='CONSTANT')",
+          "tf.pad(tensor, paddings, mode='CONSTANT', constant_values)",
+      ]))
+  def test_get_listed_operations_finds_correct_ops(
+      self, description, should_find, should_not_find):
+    handler = tfidf_handler.TfidfDescriptionHandler()
+    listed = handler._get_listed_operations(description)
+    for name in should_find:
+      self.assertIn(name, listed)
+    for name in should_not_find:
+      self.assertNotIn(name, listed)
 
   def test_repr(self):
     handler = tfidf_handler.TfidfDescriptionHandler(max_num_prioritized=12,

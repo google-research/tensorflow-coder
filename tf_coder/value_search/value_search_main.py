@@ -102,7 +102,15 @@ def run_on_all_benchmarks(settings, description_handler, json_output,
     tensor_model = None
 
   print('=' * 80)
-  modules = [google_benchmarks, stackoverflow_benchmarks, autopandas_benchmarks]
+
+  if benchmark_name == 'ALL':
+    # Only run on benchmarks from these important modules.
+    modules = [google_benchmarks, stackoverflow_benchmarks,
+               autopandas_benchmarks]
+  else:
+    # Allow searching by name among even more benchmark modules.
+    modules = None
+
   for benchmark in all_benchmarks.get_chosen_benchmarks(
       benchmark_name, modules=modules):
     gc.collect()

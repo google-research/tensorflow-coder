@@ -240,12 +240,12 @@ def simple_using_output_shape_tuple():
   examples = [
       benchmark.Example(
           inputs=[],
-          output=tf.zeros(shape=(2, 3, 4, 5)),
+          output=tf.zeros((2, 3, 4, 5)),
       ),
   ]
   constants = []
   description = 'Construct a 4D zeros tensor'
-  target_program = 'tf.zeros(shape=(2, 3, 4, 5))'
+  target_program = 'tf.zeros((2, 3, 4, 5))'
   source = 'handwritten task'
   return benchmark.Benchmark(examples=examples,
                              constants=constants,
@@ -316,7 +316,7 @@ def simple_using_primitive_input():
   ]
   constants = []
   description = 'Add primitive int and scalar int tensor'
-  target_program = 'tf.add(tf.constant(in1), in2)'
+  target_program = 'tf.add(in2, tf.constant(in1))'
   source = 'handwritten task'
   return benchmark.Benchmark(examples=examples,
                              constants=constants,
@@ -349,3 +349,74 @@ def simple_with_many_inputs():
                              target_program=target_program,
                              source=source,
                              name='simple_with_many_inputs')
+
+
+def simple_output_equals_input_single():
+  """A benchmark with the output being equal to the input tensor."""
+  examples = [
+      benchmark.Example(
+          inputs={
+              'tens': [10, 20, 30, 40, 50],
+          },
+          output=[10, 20, 30, 40, 50],
+      ),
+  ]
+  constants = [999]
+  description = 'find the right input variable'
+  target_program = 'tens'
+  source = 'handwritten task'
+  return benchmark.Benchmark(examples=examples,
+                             constants=constants,
+                             description=description,
+                             target_program=target_program,
+                             source=source,
+                             name='simple_output_equals_input_single')
+
+
+def simple_output_equals_input_multiple():
+  """A benchmark with the output being equal to one of several input tensors."""
+  examples = [
+      benchmark.Example(
+          inputs={
+              'ones': [1, 2, 3, 4, 5],
+              'tens': [10, 20, 30, 40, 50],
+              'hundreds': [100, 200, 300],
+          },
+          output=[10, 20, 30, 40, 50],
+      ),
+  ]
+  constants = [999]
+  description = 'find the right input variable'
+  target_program = 'tens'
+  source = 'handwritten task'
+  return benchmark.Benchmark(examples=examples,
+                             constants=constants,
+                             description=description,
+                             target_program=target_program,
+                             source=source,
+                             name='simple_output_equals_input_multiple')
+
+
+def simple_output_equals_constant():
+  """A benchmark with the output being equal to a constant."""
+  examples = [
+      benchmark.Example(
+          inputs={
+              'ones': [1, 2, 3, 4, 5],
+              'tens': [10, 20, 30, 40, 50],
+              'hundreds': [100, 200, 300],
+          },
+          output=10,
+      ),
+  ]
+  constants = [1, 10, 100]
+  description = 'find the right constant'
+  target_program = 'tf.constant(10)'
+  source = 'handwritten task'
+  return benchmark.Benchmark(examples=examples,
+                             constants=constants,
+                             description=description,
+                             target_program=target_program,
+                             source=source,
+                             name='simple_output_equals_constant')
+

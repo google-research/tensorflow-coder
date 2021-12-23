@@ -298,6 +298,14 @@ class Value(object):
       return tf_coder_utils.min_tensor_value(self.value)
 
   @cache
+  def reduce_sum(self):
+    """Returns the sum of the wrapped value's elements."""
+    if self.is_sequence:
+      return sum(self.value)
+    else:
+      return float(tf.reduce_sum(tf.cast(self.value, tf.float32)))
+
+  @cache
   def reduce_prod(self):
     """Returns the product of the wrapped value's elements."""
     if self.is_sequence:

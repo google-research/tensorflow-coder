@@ -15,7 +15,8 @@
 # Lint as: python3
 """TF-IDF for similarity between task descriptions and operation docstrings."""
 
-from typing import Dict, List, Optional, Text
+import re
+from typing import Dict, List, Optional, Set, Text
 
 from sklearn.feature_extraction import text as sklearn_text
 from sklearn.metrics import pairwise as sklearn_pairwise
@@ -53,7 +54,7 @@ class TfidfDescriptionHandler(description_handler.DescriptionHandler):
     self.min_tfidf_score = min_tfidf_score
     self.multiplier = multiplier
 
-    docstrings = [operation.metadata.docstring
+    docstrings = [operation.metadata.docstring.lower()
                   for operation in self.operations]
     self._vectorizer = sklearn_text.TfidfVectorizer(stop_words='english')
     self._term_document_matrix = self._vectorizer.fit_transform(docstrings)
@@ -67,22 +68,62 @@ class TfidfDescriptionHandler(description_handler.DescriptionHandler):
     Args:
       description: An English description of a task.
     """
-    description_vector = self._vectorizer.transform([description])
+    description_vector = self._vectorizer.transform([description.lower()])
     scores = sklearn_pairwise.cosine_similarity(
         description_vector, self._term_document_matrix).flatten()
     return dict(zip(self.all_names, scores))
+
+  def _get_listed_operations(self, description: Text) -> Set[Text]:
+    """Returns operations listed explicitly in the description.
+
+    This handles the following advice from Colab:
+    > If you know of a TensorFlow operation (e.g., tf.reduce_max) that is
+      relevant, include its name (e.g., "tf.reduce_max") anywhere in the
+      description. This will lead TF-Coder to prioritize that operation.
+
+    We can be a bit more lenient and allow "reduce_max" anywhere in the
+    description (without the "tf."). This helps in situations where there are
+    multiple aliases, e.g., `tf.add` and `tf.math.add`, so the user doesn't
+    have to exactly match the alias we use.
+
+    Note that having "gather_nd" in the description does NOT lead to
+    priotizing `tf.gather`, because we match on word boundaries.
+
+    Also note that this may lead to prioritizing more operations than
+    `self.max_num_prioritized`.
+
+    Args:
+      description: An English description of a task.
+    """
+    description = description.lower()
+    description_words = set(re.findall(r'\w+', description))
+    listed_set = set()
+    for operation_name in self.all_names:
+      if operation_name.startswith('tf.') and '(' in operation_name:
+        paren_index = operation_name.index('(')
+        dot_index = operation_name[:paren_index].rindex('.')
+        name_to_find = operation_name[dot_index + 1 : paren_index]
+      else:
+        name_to_find = operation_name  # For Python operations.
+      if name_to_find.lower() in description_words:
+        listed_set.add(operation_name)
+    return listed_set
 
   def get_operation_multipliers(
       self, benchmark: benchmark_module.Benchmark,
       settings: settings_module.Settings) -> Dict[Text, float]:
     """See base class."""
-    scores = self.score_description(benchmark.description)
+    description = benchmark.description.lower()
+    scores = self.score_description(description)
     # Sorted in order of decreasing TF-IDF score.
     sorted_names = sorted(self.all_names,
                           key=lambda name: scores[name], reverse=True)
     prioritized_set = set(name
                           for name in sorted_names[:self.max_num_prioritized]
                           if scores[name] >= self.min_tfidf_score)
+
+    prioritized_set.update(self._get_listed_operations(description))
+
     if settings.printing.prioritized_operations:
       for name in prioritized_set:
         print('TF-IDF handler prioritized {}, score={:.3f}'.format(

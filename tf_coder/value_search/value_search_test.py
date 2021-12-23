@@ -224,7 +224,10 @@ class ValueSearchTest(parameterized.TestCase):
         benchmark=simple_benchmark,
         settings=settings_module.from_dict({
             'timeout': 20,
-            'printing.statistics': True}),
+            'printing.statistics': True,
+            'require_all_inputs_used': False,
+            'require_one_input_used': False,
+        }),
         description_handler=handler)
     self.assertLen(results.solutions, 1)
     self.assertIsNotNone(results.solutions[0].expression)
@@ -232,6 +235,10 @@ class ValueSearchTest(parameterized.TestCase):
     self.assertGreater(results.total_time, 0)
     self.assertNotEmpty(results.value_set)
     self.assertGreaterEqual(results.statistics.total_apply_count, 0)
+    # The simple benchmarks are so simple that we can directly write down the
+    # correct (minimal) target program.
+    self.assertEqual(results.solutions[0].expression,
+                     simple_benchmark.target_program)
 
   @parameterized.named_parameters(
       ('stackoverflow_06', 'stackoverflow_06', 10.0,

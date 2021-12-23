@@ -352,6 +352,23 @@ def _find_solutions(
   # A set storing all values found so far.
   value_set = set().union(*values_by_weight)
 
+  # Check if the output equals an input or constant.
+  for weight, values in enumerate(values_by_weight):
+    if output_value in values:
+      matching_value = values[output_value]
+      print('WARNING: The output is the same as the input or constant `{}`. '
+            'Check that your input-output example is correct.\n'.format(
+                matching_value.reconstruct_expression()))
+      possible_first_solution = not solutions
+      _record_solutions(matching_value, weight, start_time, solutions,
+                        solution_expression_set, benchmark, settings)
+      if possible_first_solution and solutions:
+        end_time = min(
+            end_time,
+            timeit.default_timer() + settings.max_extra_solutions_time)
+      if len(solutions) >= settings.max_solutions:
+        return solutions, value_set, values_by_weight, statistics
+
   filter_cache = filtered_values_cache.FilteredValuesCache()
 
   # Value search by weight.

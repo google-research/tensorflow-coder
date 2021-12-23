@@ -57,7 +57,7 @@ class BagOfWordsDescriptionHandler(description_handler.DescriptionHandler):
                use_docstrings_for_tfidf=False,
                use_docstrings_as_examples=True,
                multiplier: float = 0.75,
-               path_prefix: Text = None,
+               path_prefix: Optional[Text] = None,
                model_filepath=None,
                load: bool = False,
                save: bool = False):

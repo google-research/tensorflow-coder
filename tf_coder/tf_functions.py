@@ -155,13 +155,13 @@ TF_FUNCTIONS = [
                  weight=24),
     FunctionInfo(name='tf.gather(params, indices, axis, batch_dims)',
                  filter_group=FilterGroup.GATHER_4,
-                 weight=48),
+                 weight=40),
     FunctionInfo(name='tf.gather_nd(params, indices)',
                  filter_group=FilterGroup.GATHER_ND_2,
                  weight=28),
     FunctionInfo(name='tf.gather_nd(params, indices, batch_dims)',
                  filter_group=FilterGroup.GATHER_ND_3,
-                 weight=48),
+                 weight=36),
     FunctionInfo(name='tf.greater(x, y)',
                  filter_group=FilterGroup.SAME_DTYPE_NUMERIC_BROADCASTABLE_2,
                  weight=24),
@@ -195,6 +195,18 @@ TF_FUNCTIONS = [
     FunctionInfo(name='tf.math.log(x)',
                  filter_group=FilterGroup.FLOATTENSOR_1,
                  weight=52),
+    FunctionInfo(name='tf.math.logical_and(x, y)',
+                 filter_group=FilterGroup.BOOLTENSOR_BROADCASTABLE_2,
+                 weight=44),
+    FunctionInfo(name='tf.math.logical_not(x)',
+                 filter_group=FilterGroup.BOOLTENSOR_1,
+                 weight=48),
+    FunctionInfo(name='tf.math.logical_or(x, y)',
+                 filter_group=FilterGroup.BOOLTENSOR_BROADCASTABLE_2,
+                 weight=44),
+    FunctionInfo(name='tf.math.logical_xor(x, y)',
+                 filter_group=FilterGroup.BOOLTENSOR_BROADCASTABLE_2,
+                 weight=60),
     FunctionInfo(name='tf.math.negative(x)',
                  filter_group=FilterGroup.NUMERICTENSOR_1,
                  weight=48),
@@ -295,6 +307,9 @@ TF_FUNCTIONS = [
     FunctionInfo(name='tf.reduce_any(input_tensor, axis)',
                  filter_group=FilterGroup.BOOLTENSOR_AXIS_2,
                  weight=40),
+    FunctionInfo(name='tf.reduce_all(input_tensor, axis)',
+                 filter_group=FilterGroup.BOOLTENSOR_AXIS_2,
+                 weight=44),
     FunctionInfo(name='tf.reduce_max(input_tensor)',
                  filter_group=FilterGroup.NUMERICTENSOR_1,
                  weight=24),
@@ -322,6 +337,12 @@ TF_FUNCTIONS = [
     FunctionInfo(name='tf.reduce_sum(input_tensor, axis)',
                  filter_group=FilterGroup.NUMERICTENSOR_AXIS_2,
                  weight=24),
+    FunctionInfo(name='tf.repeat(input, repeats)',
+                 filter_group=FilterGroup.REPEAT_2,
+                 weight=56),
+    FunctionInfo(name='tf.repeat(input, repeats, axis)',
+                 filter_group=FilterGroup.REPEAT_3,
+                 weight=52),
     FunctionInfo(name='tf.reshape(tensor, shape)',
                  filter_group=FilterGroup.TENSOR_SHAPE_2,
                  weight=28),
@@ -369,7 +390,11 @@ TF_FUNCTIONS = [
                  weight=28),
     FunctionInfo(name='tf.squeeze(input)',
                  filter_group=FilterGroup.SQUEEZE_1,
-                 weight=24),
+                 # More weight than tf.squeeze(input, axis), since this version
+                 # of squeeze is very prone to false positives (squeezing
+                 # unintended axes when those axes have length 1). Realistically
+                 # this op only helps when we intend to squeeze multiple axes.
+                 weight=24 + AXIS_CONSTANT_WEIGHT),
     FunctionInfo(name='tf.squeeze(input, axis)',
                  filter_group=FilterGroup.SQUEEZE_2,
                  weight=23),  # Less weight than tf.reduce_max(input, axis).
@@ -476,8 +501,9 @@ SPARSE_FUNCTIONS = [
 ]
 
 # A list of operation names that require filtering for value search to work at
-# all, i.e., avoid segfaults and huge memory usage. Only relevant for PLDI paper
-# experiments that turn off filtering for operations not listed here.
+# all, i.e., avoid segfaults and huge memory usage. Only relevant for paper
+# experiments that turn off filtering for operations not listed here. These
+# lists may become stale when we add support for more operations.
 REQUIRES_FILTERING = [
     # Potentially huge memory usage.
     'tf.broadcast_to(input, shape)',

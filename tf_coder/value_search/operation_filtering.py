@@ -252,12 +252,6 @@ def TENSOR_OR_SPARSE_FILTER(arg_value):
   return arg_value.is_tensor or arg_value.is_sparse_tensor
 
 
-def VECTOR_LENGTH_FILTER(arg_value):
-  """Ensures that a vector of length N (N is the argument) is small enough."""
-  return (INT_OR_INT_TENSOR_FILTER(arg_value) and
-          0 < int(arg_value.value) <= limits.MAX_DIMENSION_LENGTH)
-
-
 def SQUARE_MATRIX_SIZE_FILTER(arg_value):
   """Ensures that an NxN matrix (N is the argument) is small enough."""
   if not INT_OR_INT_TENSOR_FILTER(arg_value):
@@ -313,6 +307,13 @@ def SCATTER_INDICES_FILTER(arg_value):
           arg_value.max() < limits.MAX_DIMENSION_LENGTH)
 
 
+def REPEATS_FILTER(arg_value):
+  """Only keeps nonneg. int scalars/seqs. or 1-D int tensors with small sum."""
+  return ((arg_value.type is int or CONTAINS_INTS_1D_FILTER(arg_value)) and
+          arg_value.min() >= 0 and
+          0 < arg_value.reduce_sum() <= limits.MAX_DIMENSION_LENGTH)
+
+
 def SAME_DTYPES_APPLY_FILTER(arg_values):
   """Ensures that the first two arguments have the same dtype."""
   return arg_values[0].dtype == arg_values[1].dtype
@@ -356,6 +357,8 @@ def add_filters_to_function_operation(function_operation):
     function_operation.add_value_filters([FLOAT_TENSOR_FILTER])
   elif group == filter_group.FilterGroup.NUMERICTENSOR_1:
     function_operation.add_value_filters([NUMERIC_TENSOR_FILTER])
+  elif group == filter_group.FilterGroup.BOOLTENSOR_1:
+    function_operation.add_value_filters([get_dtype_filter(tf.bool)])
   elif group == filter_group.FilterGroup.SPARSE_1:
     function_operation.add_value_filters([SPARSE_FILTER])
   elif group == filter_group.FilterGroup.NOT_TENSOR_1:
@@ -401,6 +404,9 @@ def add_filters_to_function_operation(function_operation):
     function_operation.set_apply_filter(SAME_DTYPES_BROADCASTABLE_APPLY_FILTER)
   elif group == filter_group.FilterGroup.SAME_DTYPE_FLOAT_BROADCASTABLE_2:
     function_operation.add_value_filters([FLOAT_TENSOR_FILTER] * 2)
+    function_operation.set_apply_filter(SAME_DTYPES_BROADCASTABLE_APPLY_FILTER)
+  elif group == filter_group.FilterGroup.BOOLTENSOR_BROADCASTABLE_2:
+    function_operation.add_value_filters([get_dtype_filter(tf.bool)] * 2)
     function_operation.set_apply_filter(SAME_DTYPES_BROADCASTABLE_APPLY_FILTER)
   elif group == filter_group.FilterGroup.SAME_SHAPE_ONE_SPARSE_2:
     def _same_shape_one_sparse_filter(arg_values):
@@ -490,7 +496,7 @@ def add_filters_to_function_operation(function_operation):
     function_operation.add_value_filters([SQUARE_MATRIX_SIZE_FILTER])
 
   elif group == filter_group.FilterGroup.RANGE_1:
-    function_operation.add_value_filters([VECTOR_LENGTH_FILTER])
+    function_operation.add_value_filters([INT_LENGTH_FILTER])
 
   elif group == filter_group.FilterGroup.SEQUENCE_MASK_1:
     function_operation.add_value_filters([SEQUENCE_MASK_LENGTHS_FILTER])
@@ -526,7 +532,7 @@ def add_filters_to_function_operation(function_operation):
       num_rows, num_cols = arg_values
       return (int(num_rows.value) * int(num_cols.value)
               <= limits.MAX_TENSOR_ELEMENTS)
-    function_operation.add_value_filters([VECTOR_LENGTH_FILTER] * 2)
+    function_operation.add_value_filters([INT_LENGTH_FILTER] * 2)
     function_operation.set_apply_filter(_eye_rows_cols_apply_filter)
 
   elif group == filter_group.FilterGroup.EYE_ROWS_DTYPE_2:
@@ -596,6 +602,25 @@ def add_filters_to_function_operation(function_operation):
               <= limits.MAX_TENSOR_ELEMENTS)
     function_operation.set_apply_filter(_pad_2_apply_filter)
 
+  elif group == filter_group.FilterGroup.REPEAT_2:
+    function_operation.add_value_filters([PRIMITIVE_OR_TENSOR_FILTER,
+                                          REPEATS_FILTER])
+    def _repeat_2_apply_filter(arg_values):
+      input_, repeats = arg_values
+      input_num_elements = input_.num_elements()
+      repeats_num_elements = repeats.num_elements()
+      # Try to avoid creating too large tensors. The checks below should catch
+      # egregious cases but aren't exhaustive.
+      # If repeats has 1 element, then the length of the (flat) output equals
+      # the number of repeats times the size of the input.
+      return ((repeats_num_elements == 1 and
+               repeats.max() * input_num_elements
+               <= limits.MAX_DIMENSION_LENGTH) or
+              # If repeats is a sequence, then the length of the output equals
+              # the sum of the repeats, which is bounded in the value filter.
+              repeats_num_elements == input_num_elements)
+    function_operation.set_apply_filter(_repeat_2_apply_filter)
+
   elif group == filter_group.FilterGroup.SEARCHSORTED_2:
     def _sorted_last_dimension(arg_value):
       """Must be a numeric tensor that is sorted in the last dimension."""
@@ -623,42 +648,6 @@ def add_filters_to_function_operation(function_operation):
       return (lengths.num_elements() * int(maxlen.value)
               <= limits.MAX_TENSOR_ELEMENTS)
     function_operation.set_apply_filter(_sequence_mask_apply_filter)
-
-  elif group == filter_group.FilterGroup.TILE_2:
-    def _tile_apply_filter(arg_values):
-      """Checks that the result will have a small number of elements."""
-      tensor, multiples = arg_values
-      if multiples.is_sequence:
-        dims = len(multiples.value)
-      else:  # Tensor case.
-        dims = multiples.shape[0]
-      return (multiples.min() > 0 and
-              multiples.max() > 1 and
-              dims == len(tensor.shape) and
-              multiples.reduce_prod() * tensor.num_elements()
-              <= limits.MAX_TENSOR_ELEMENTS)
-    function_operation.add_value_filters([TENSOR_FILTER,
-                                          CONTAINS_INTS_1D_FILTER])
-    function_operation.set_apply_filter(_tile_apply_filter)
-
-  elif group == filter_group.FilterGroup.TOP_K_2:
-    function_operation.add_value_filters([NONSCALAR_NUMERIC_TENSOR_FILTER,
-                                          INT_LENGTH_FILTER])
-    def _top_k_apply_filter(arg_values):
-      """The tensor must have more than k items in the last dimension."""
-      tensor, k = arg_values
-      return int(k.value) < tensor.shape[-1]
-    function_operation.set_apply_filter(_top_k_apply_filter)
-
-  elif group == filter_group.FilterGroup.TRANSPOSE_2:
-    def _transpose_apply_filter(arg_values):
-      """Checks that perm has length equal to the number of a's dimensions."""
-      a, perm = arg_values
-      perm_len = perm.shape[0] if perm.is_tensor else len(perm.value)
-      return perm_len == len(a.shape)
-    function_operation.add_value_filters([TENSOR_FILTER,
-                                          CONTAINS_INTS_1D_FILTER])
-    function_operation.set_apply_filter(_transpose_apply_filter)
 
   elif group == filter_group.FilterGroup.SPARSE_RETAIN_2:
     def _boolean_sequence_filter(arg_value):
@@ -719,6 +708,42 @@ def add_filters_to_function_operation(function_operation):
       return (axis.value < len(tensor.shape) and
               tensor.shape[axis.value] == 1)
     function_operation.set_apply_filter(_squeeze_2_apply_filter)
+
+  elif group == filter_group.FilterGroup.TILE_2:
+    def _tile_apply_filter(arg_values):
+      """Checks that the result will have a small number of elements."""
+      tensor, multiples = arg_values
+      if multiples.is_sequence:
+        dims = len(multiples.value)
+      else:  # Tensor case.
+        dims = multiples.shape[0]
+      return (multiples.min() > 0 and
+              multiples.max() > 1 and
+              dims == len(tensor.shape) and
+              multiples.reduce_prod() * tensor.num_elements()
+              <= limits.MAX_TENSOR_ELEMENTS)
+    function_operation.add_value_filters([TENSOR_FILTER,
+                                          CONTAINS_INTS_1D_FILTER])
+    function_operation.set_apply_filter(_tile_apply_filter)
+
+  elif group == filter_group.FilterGroup.TOP_K_2:
+    function_operation.add_value_filters([NONSCALAR_NUMERIC_TENSOR_FILTER,
+                                          INT_LENGTH_FILTER])
+    def _top_k_apply_filter(arg_values):
+      """The tensor must have more than k items in the last dimension."""
+      tensor, k = arg_values
+      return int(k.value) < tensor.shape[-1]
+    function_operation.set_apply_filter(_top_k_apply_filter)
+
+  elif group == filter_group.FilterGroup.TRANSPOSE_2:
+    def _transpose_apply_filter(arg_values):
+      """Checks that perm has length equal to the number of a's dimensions."""
+      a, perm = arg_values
+      perm_len = perm.shape[0] if perm.is_tensor else len(perm.value)
+      return perm_len == len(a.shape)
+    function_operation.add_value_filters([TENSOR_FILTER,
+                                          CONTAINS_INTS_1D_FILTER])
+    function_operation.set_apply_filter(_transpose_apply_filter)
 
   elif group == filter_group.FilterGroup.CLIP_BY_VALUE_3:
     function_operation.add_value_filters([NUMERIC_TENSOR_FILTER,
@@ -794,6 +819,26 @@ def add_filters_to_function_operation(function_operation):
         return (len(axis.value) == len(shift.value) and
                 axis.max() < len(tensor.shape))
     function_operation.set_apply_filter(_roll_apply_filter)
+
+  elif group == filter_group.FilterGroup.REPEAT_3:
+    function_operation.add_value_filters([NON_SCALAR_TENSOR_FILTER,
+                                          REPEATS_FILTER,
+                                          AXIS_FILTER])
+    def _repeat_3_apply_filter(arg_values):
+      input_, repeats, axis = arg_values
+      repeats_num_elements = repeats.num_elements()
+      # Try to avoid creating too large tensors. The checks below should catch
+      # egregious cases but aren't exhaustive.
+      return (axis.value < len(input_.shape) and
+              # If repeats has 1 element, then the size of the output equals the
+              # number of repeats times the size of the input.
+              ((repeats_num_elements == 1 and
+                repeats.max() * input_.num_elements()
+                <= limits.MAX_TENSOR_ELEMENTS) or
+               # If repeats is a sequence, then the length of the axis equals
+               # the sum of the repeats, which is bounded in the value filter.
+               repeats_num_elements == input_.shape[axis.value]))
+    function_operation.set_apply_filter(_repeat_3_apply_filter)
 
   elif group == filter_group.FilterGroup.SCATTER_ND_3:
     function_operation.add_value_filters([SCATTER_INDICES_FILTER,

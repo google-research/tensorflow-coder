@@ -21,6 +21,7 @@ from absl.testing import parameterized
 import tensorflow as tf
 from tf_coder import tf_coder_utils
 from tf_coder.benchmarks import all_benchmarks
+from tf_coder.benchmarks import google_benchmarks
 from tf_coder.benchmarks import stackoverflow_benchmarks
 from tf_coder.benchmarks import test_benchmarks
 from tf_coder.value_search import value as value_module
@@ -74,9 +75,8 @@ class AllBenchmarksTest(parameterized.TestCase):
       self.assertIsNotNone(benchmark.source)
 
   def test_all_benchmarks_have_description(self):
-    for benchmark in all_benchmarks.all_benchmarks(include_ignored=False):
-      if benchmark.name.startswith('autopandas_'):
-        continue  # AutoPandas benchmarks don't have descriptions.
+    modules = [google_benchmarks, stackoverflow_benchmarks]
+    for benchmark in all_benchmarks.all_benchmarks(modules=modules):
       self.assertTrue(benchmark.description)
 
   def test_all_benchmarks_have_reason_if_ignored(self):

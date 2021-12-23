@@ -46,6 +46,8 @@ class FilterGroup(enum.Enum):
   FLOATTENSOR_1 = 'FLOATTENSOR_1'
   # The argument is an int or float tensor.
   NUMERICTENSOR_1 = 'NUMERICTENSOR_1'
+  # The argument is a boolean tensor.
+  BOOLTENSOR_1 = 'BOOLTENSOR_1'
   # The argument is a SparseTensor.
   SPARSE_1 = 'SPARSE_1'
   # The argument is not a tensor.
@@ -85,6 +87,8 @@ class FilterGroup(enum.Enum):
   # The two arguments are float tensors with the same dtype and the two tensors
   # are broadcastable, or one of the arguments is a float primitive.
   SAME_DTYPE_FLOAT_BROADCASTABLE_2 = 'SAME_DTYPE_FLOAT_BROADCASTABLE_2'
+  # The two arguments are boolean tensors with broadcastable shapes.
+  BOOLTENSOR_BROADCASTABLE_2 = 'BOOLTENSOR_BROADCASTABLE_2'
   # Of the two arguments, one must be a SparseTensor, and the other must be a
   # Tensor or SparseTensor. The two arguments must have the same shape.
   SAME_SHAPE_ONE_SPARSE_2 = 'SAME_SHAPE_ONE_SPARSE_2'
@@ -156,13 +160,10 @@ class FilterGroup(enum.Enum):
   # The first argument must be a tensor, and the second must be a nested int
   # list or int32 tensor of shape [rank_of_arg_1, 2].
   PAD_2 = 'PAD_2'
-  # Ensures that tf.tile(input, multiples) produces a small result.
-  TILE_2 = 'TILE_2'
-  # The first argument is a numeric tensor, the second is a compatible int
-  # primitive or tensor.
-  TOP_K_2 = 'TOP_K_2'
-  # The first argument is a tensor, the second is 1D (ints) with correct length.
-  TRANSPOSE_2 = 'TRANSPOSE_2'
+  # The first argument is a tensor or scalar, and the second argument is a
+  # nonnegative 1D int tensor/sequence (or nonnegative int scalar) with either
+  # length 1, or length equal to the number of elements in the first argument.
+  REPEAT_2 = 'REPEAT_2'
   # The first argument is sorted in the last dimension, the second argument is
   # the same dtype and rank, and all dimension lengths match except the last.
   SEARCHSORTED_2 = 'SEARCHSORTED_2'
@@ -181,6 +182,13 @@ class FilterGroup(enum.Enum):
   # The first argument is a tensor with more than 1 squeezable dimension, and
   # the second argument is an int specifying a squeezable dimension.
   SQUEEZE_2 = 'SQUEEZE_2'
+  # Ensures that tf.tile(input, multiples) produces a small result.
+  TILE_2 = 'TILE_2'
+  # The first argument is a numeric tensor, the second is a compatible int
+  # primitive or tensor.
+  TOP_K_2 = 'TOP_K_2'
+  # The first argument is a tensor, the second is 1D (ints) with correct length.
+  TRANSPOSE_2 = 'TRANSPOSE_2'
 
   # The first argument must be an int or float tensor, and the second and third
   # arguments must both be nondecreasing primitives.
@@ -195,6 +203,11 @@ class FilterGroup(enum.Enum):
   PAD_3 = 'PAD_3'
   # The arguments result in a small tensor.
   RANGE_3 = 'RANGE_3'
+  # The first argument is a nonscalar tensor, the third argument is an axis in
+  # range, and the second argument is a nonnegative 1D int tensor/sequence (or
+  # nonnegative int scalar) with either length 1 or length equal to the length
+  # of the first argument at the specified axis.
+  REPEAT_3 = 'REPEAT_3'
   # The second and third arguments must be int primitives, lists of ints, or 1D
   # int tensors, and they must have the same shape.
   ROLL_3 = 'ROLL_3'

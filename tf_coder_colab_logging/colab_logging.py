@@ -15,7 +15,10 @@
 # Lint as: python3
 """Sends logging information from the Colab interface to Google Analytics."""
 
+import sys
 import uuid
+
+import tensorflow as tf
 
 from tf_coder import version as tf_coder_version
 from tf_coder_colab_logging import serialization
@@ -117,6 +120,8 @@ def get_problem_logging_dict(inputs, output, constants, description, settings,
       'session_id': SESSION_ID,
       'tf_coder_version': tf_coder_version.__version__,
       'logging_version': logging_version.__version__,
+      'tensorflow_version': tf.__version__,
+      'python_version': sys.version,
   }
 
 

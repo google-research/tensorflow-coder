@@ -97,7 +97,7 @@ is sufficient for your use cases.
 However, if you would rather not use the Colab notebook, you can still install
 TF-Coder as a Python package yourself:
 ```
-pip install --user tf-coder
+pip install --user tensorflow-coder
 ```
 
 To run the TF-Coder search as a library, follow the code example in

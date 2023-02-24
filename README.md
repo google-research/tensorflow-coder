@@ -84,7 +84,7 @@ For more information about TF-Coder, see the following documents:
 * [**User Journeys**](UserJourneys.md): illustrates several realistic scenarios
   where TF-Coder can help accelerate your TensorFlow development in different
   ways.
-* [**Our research paper**](https://arxiv.org/abs/2003.09040): describes the
+* [**Our research paper**](https://dl.acm.org/doi/full/10.1145/3517034): describes the
   technology behind TF-Coder.
 
 ## Optional: Using TF-Coder Outside Colab
@@ -113,15 +113,19 @@ To run tests, clone the repository and run `pytest`.
 ## Citation
 
 If you find TF-Coder helpful for a research project, you may cite our [research
-paper](https://arxiv.org/abs/2003.09040) as follows:
+paper](https://dl.acm.org/doi/full/10.1145/3517034) as follows:
 ```
 @article{TFCoder,
     title={{TF-Coder}: Program Synthesis for Tensor Manipulations},
     author={Kensen Shi and David Bieber and Rishabh Singh},
-    year={2020},
-    url={https://arxiv.org/abs/2003.09040},
-    archivePrefix={arXiv},
-    eprint={2003.09040}
+    journal={ACM Transactions on Programming Languages and Systems (TOPLAS)},
+    volume={44},
+    number={2},
+    pages={1--36},
+    year={2022},
+    publisher={Association for Computing Machinery},
+    url={https://doi.org/10.1145/3517034},
+    doi={10.1145/3517034},
 }
 ```
 

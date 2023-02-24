@@ -118,10 +118,12 @@ paper](https://arxiv.org/abs/2003.09040) as follows:
 @article{TFCoder,
     title={{TF-Coder}: Program Synthesis for Tensor Manipulations},
     author={Kensen Shi and David Bieber and Rishabh Singh},
-    year={2020},
-    url={https://arxiv.org/abs/2003.09040},
-    archivePrefix={arXiv},
-    eprint={2003.09040}
+    year = {2022},
+    issue_date = {June 2022},
+    publisher = {Association for Computing Machinery},
+    url = {https://doi.org/10.1145/3517034},
+    doi = {10.1145/3517034},
+    journal = {ACM Trans. Program. Lang. Syst.},
 }
 ```
 
